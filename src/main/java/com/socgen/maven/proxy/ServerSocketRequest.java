@@ -1,13 +1,8 @@
 package com.socgen.maven.proxy;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -24,11 +19,6 @@ public class ServerSocketRequest implements Runnable {
 //	private BufferedWriter out;
 //	private HttpClient httpClient;
 
-//	static {
-//		ConsoleAppender consoleAppender = new ConsoleAppender(new SimpleLayout());
-//		BasicConfigurator.configure(consoleAppender);
-//	}
-
 	public ServerSocketRequest(final Socket socket) {
 		this.socket = socket;
 	}
@@ -41,35 +31,16 @@ public class ServerSocketRequest implements Runnable {
 
 			final String request = socketIn.readLine();
 			if (null != request){
-				LOGGER.info("New Request: " + request);
+				LOGGER.info(request);
 				final Map<String, String> requestMap = getRequestMap(request);
-				downloadFile(requestMap.get(URI));
+				new DownloadFile(requestMap.get(URI), socket.getOutputStream()).run();
 			}
 			
 			socketIn.close();
 //			out.close();
 			socket.close();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
-	}
-
-	private void downloadFile(final String uri) {
-		BufferedInputStream inStream;
-		try {
-			inStream = new BufferedInputStream(new URL(uri).openStream());
-			final BufferedOutputStream bout = new BufferedOutputStream(socket.getOutputStream(),1024);
-			final byte[] data = new byte[1024];
-			int x = 0;
-			while((x=inStream.read(data,0,1024))>=0){
-				bout.write(data,0,x);
-			}
-			bout.close();
-			inStream.close();
-		} catch (MalformedURLException e) {
-			LOGGER.error(e.getMessage());
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Exception:", e.getMessage());
 		}
 	}
 
