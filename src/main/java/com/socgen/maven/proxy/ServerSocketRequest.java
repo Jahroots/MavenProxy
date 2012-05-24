@@ -7,11 +7,11 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ServerSocketRequest implements Runnable {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServerSocketRequest.class);
+	private static final Log LOGGER = LogFactory.getLog(ServerSocketRequest.class);
 	private static final String METHOD = "method";
 	private static final String URI = "uri";
 	private static final String PROTOCOL = "protocol";
@@ -40,7 +40,7 @@ public class ServerSocketRequest implements Runnable {
 //			out.close();
 			socket.close();
 		} catch (Exception e) {
-			LOGGER.error("Exception:", e.getMessage());
+			LOGGER.error(e);
 		}
 	}
 

@@ -8,11 +8,11 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class DownloadFile implements Runnable{
-	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadFile.class);
+	private static final Log LOGGER = LogFactory.getLog(DownloadFile.class);
 	private transient final String uri;
 	private transient final OutputStream out;
 	public DownloadFile(final String uri, final OutputStream out) {
@@ -52,22 +52,22 @@ public class DownloadFile implements Runnable{
 				bOut.write(data,0,len);
 			}
 		} catch (MalformedURLException e) {
-			LOGGER.error("MalformedURLException: ", e.getMessage());
+			LOGGER.error(e);
 		} catch (IOException e) {
-			LOGGER.error("IOException: ", e.getMessage());
+			LOGGER.error(e);
 		} finally{
 			if (null != bOut){
 				try {
 					bOut.close();
 				} catch (IOException e) {
-					LOGGER.error("IOException: ", e.getMessage());
+					LOGGER.error(e);
 				}
 			}
 			if (null != inStream){
 				try {
 					inStream.close();
 				} catch (IOException e) {
-					LOGGER.error("IOException: ", e.getMessage());
+					LOGGER.error(e);
 				}
 			}
 		}
