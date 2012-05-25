@@ -6,18 +6,24 @@ import java.net.ServerSocket;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.socgen.maven.proxy.utils.CookieReader;
+import com.socgen.maven.proxy.utils.FileWatcher;
+
 public class Server {
 	public static final int SERVER_PORT = 2511;
 	private static final Log LOGGER = LogFactory.getLog(Server.class);
 	private transient ServerSocket socketServer;
+	private transient FileWatcher fileWatcher = new FileWatcher();
+	
 //	public static final String EQUAL = "=";
 //	public static final String HTTP_PROXY_HOST = "http.proxyHost";
 //	public static final String HTTP_PROXY_PORT = "http.proxyPort";
 //	public static final String HTTP_PROXY_USER = "http.proxyUser";
 //	public static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
-	private final String cookieHeader;
-	public Server(final String cookie) {
-		this.cookieHeader = cookie;
+	public Server() {
+		CookieReader.readCookies();
+		fileWatcher.start();
+		
 		try {
 			socketServer = new ServerSocket(SERVER_PORT);
 			LOGGER.info("Maven Server Proxy Started !");
@@ -30,7 +36,7 @@ public class Server {
 	private void startListen() throws IOException {
 		while(true){
 //			new Thread(new ServerSocketRequest(socketServer.accept())).start();
-			new Thread(new DownloaderProcessBar(socketServer.accept(), cookieHeader)).start();
+			new Thread(new DownloaderProcessBar(socketServer.accept(), false)).start();
 		}
 	}
 
@@ -61,11 +67,6 @@ public class Server {
 //				}
 //			}
 //		}
-		if (args.length > 0){
-			new Server(args[0]);
-		}else{
-			new Server(null);
-		}
-		
+		new Server();
 	}
 }

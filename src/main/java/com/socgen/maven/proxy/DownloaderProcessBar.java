@@ -14,27 +14,29 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URL;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import net.sf.jcprogress.ConsoleProgressBarThread;
 import net.sf.jcprogress.ConsoleProgressThreadBase;
 import net.sf.jcprogress.ProgressStatusProvider;
 
+import com.socgen.maven.proxy.utils.CookieReader;
 import com.socgen.maven.proxy.utils.Utils;
 
 public class DownloaderProcessBar implements ProgressStatusProvider, Runnable{
-
+	private static final Logger LOGGER = Logger.getLogger(DownloaderProcessBar.class.getName());
+	
 	private String progressStatusText = "";
 	private int currentProgressCount = 0;
 	private int wholeProcessCount = 0;
 
 	private Socket socket;
-	private String cookie;
 	private ConsoleProgressThreadBase progress = null;
 	private String fileName;
-	
-	public DownloaderProcessBar(final Socket socket, final String cookie) {
+	private boolean useCookie;
+	public DownloaderProcessBar(final Socket socket, final boolean useCookie) {
 		this.socket = socket;
-		this.cookie = cookie;
+		this.useCookie = useCookie;
 	}
 	
 	@Override
@@ -50,14 +52,14 @@ public class DownloaderProcessBar implements ProgressStatusProvider, Runnable{
 			
 			URL urlConnection = new URL(url);
 			HttpURLConnection con = null;
-			if (null == cookie){
+			if (!useCookie){
 				con = (HttpURLConnection) urlConnection.openConnection();
 			}else{
 				SocketAddress addr = new InetSocketAddress("sogetoile.arpege.socgen", 8080);
 				Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
 				con = (HttpURLConnection) urlConnection.openConnection(proxy);
 				//"BCSI-AC-1411779732B63501=1EB79ABD00000105Ho7eVGJIWA3v4Kim1rr9xBpgKIchAAAABQEAABbWVwFwYgAATQEAAFJrBAA="
-				con.addRequestProperty("Cookie", cookie);
+				con.addRequestProperty("Cookie", CookieReader.VALUE);
 			}
 			wholeProcessCount = con.getContentLength();
 			
@@ -67,8 +69,8 @@ public class DownloaderProcessBar implements ProgressStatusProvider, Runnable{
 			progress.setShowCounter(true);
 			progress.setShowPercentage(true);
 			progress.setShowRemainingTime(true);
-			this.progressStatusText = fileName + " : " + Utils.convertToStringRepresentation(wholeProcessCount);
-			progress.start();
+			this.progressStatusText = fileName;//+ " : " + Utils.convertToStringRepresentation(wholeProcessCount);
+//			progress.start();
 			
 //			System.out.println("\n" + fileName + " size:" + Utils.convertToStringRepresentation(wholeProcessCount));
 			BufferedInputStream inStream = new BufferedInputStream(con.getInputStream());
@@ -76,15 +78,17 @@ public class DownloaderProcessBar implements ProgressStatusProvider, Runnable{
 			final BufferedOutputStream bOut = new BufferedOutputStream(fos,1024);
 			final byte[] data = new byte[1024];
 			int len = 0;
+			LOGGER.info(fileName + " " + wholeProcessCount);
 			while ((len = inStream.read(data, 0, 1024)) >= 0) {
 				bOut.write(data, 0, len);
 				currentProgressCount += len;
+				System.out.println("\t\t" + currentProgressCount);
 			}
 			
 			bOut.close();
 			inStream.close();
 			
-			progress.waitToStop();
+//			progress.waitToStop();
 			Utils.sendResponseToSocket(socket.getOutputStream(), fileName, Utils.ResponseType.HTTP_200);
 		}catch(FileNotFoundException fe){
 			if (null!=socket){

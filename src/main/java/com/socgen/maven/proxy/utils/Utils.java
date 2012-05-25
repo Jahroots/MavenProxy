@@ -53,7 +53,6 @@ public final class Utils {
 	
 	public static byte[] fileContent(final String fileName){
 		File file = new File(fileName);
-//		System.out.println(file.exists() + " " + file.getAbsolutePath());
 		byte fileContent[] = new byte[(int) file.length()];
 		try{
 			FileInputStream fin = new FileInputStream(file);
@@ -104,7 +103,7 @@ public final class Utils {
 		}
 
 		bar.append("] " + txt + "  " + percent + "%     ");
-		System.out.print("\r" + bar.toString());
+//		System.out.print("\r" + bar.toString());
 	}
 	public static String humanReadableByteCount(long bytes, boolean si) {
 	    int unit = si ? 1000 : 1024;
