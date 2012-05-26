@@ -20,7 +20,7 @@ import net.sf.jcprogress.ConsoleProgressBarThread;
 import net.sf.jcprogress.ConsoleProgressThreadBase;
 import net.sf.jcprogress.ProgressStatusProvider;
 
-import com.socgen.maven.proxy.utils.CookieReader;
+import com.socgen.maven.proxy.utils.ContextThreadLocal;
 import com.socgen.maven.proxy.utils.Utils;
 
 public class DownloaderProcessBar implements ProgressStatusProvider, Runnable{
@@ -59,7 +59,8 @@ public class DownloaderProcessBar implements ProgressStatusProvider, Runnable{
 				Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
 				con = (HttpURLConnection) urlConnection.openConnection(proxy);
 				//"BCSI-AC-1411779732B63501=1EB79ABD00000105Ho7eVGJIWA3v4Kim1rr9xBpgKIchAAAABQEAABbWVwFwYgAATQEAAFJrBAA="
-				con.addRequestProperty("Cookie", CookieReader.VALUE);
+//				con.addRequestProperty("Cookie", CookieReader.VALUE);
+				con.addRequestProperty("Cookie", ContextThreadLocal.get().getCookie().getValue());
 			}
 			wholeProcessCount = con.getContentLength();
 			

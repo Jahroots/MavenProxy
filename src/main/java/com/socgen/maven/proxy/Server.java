@@ -7,13 +7,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.socgen.maven.proxy.utils.CookieReader;
-import com.socgen.maven.proxy.utils.FileWatcher;
+import com.socgen.maven.proxy.utils.FirefoxCookieWatcher;
+import com.socgen.maven.proxy.utils.Watcher;
 
 public class Server {
 	public static final int SERVER_PORT = 2511;
 	private static final Log LOGGER = LogFactory.getLog(Server.class);
 	private transient ServerSocket socketServer;
-	private transient FileWatcher fileWatcher = new FileWatcher();
+	private transient Watcher watcher;
 	
 //	public static final String EQUAL = "=";
 //	public static final String HTTP_PROXY_HOST = "http.proxyHost";
@@ -22,7 +23,9 @@ public class Server {
 //	public static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
 	public Server() {
 		CookieReader.readCookies();
-		fileWatcher.start();
+//		watcher = new Watcher(new CookieTimeTask());
+		watcher = new Watcher(new FirefoxCookieWatcher());
+		watcher.start();
 		
 		try {
 			socketServer = new ServerSocket(SERVER_PORT);
