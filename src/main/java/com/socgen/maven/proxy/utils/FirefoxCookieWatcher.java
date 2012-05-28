@@ -89,7 +89,7 @@ public class FirefoxCookieWatcher extends TimerTask {
 				Connection connection = null; 
 				try {
 					final QueryRunner runner = new QueryRunner(getDataSource());
-					final List<Cookie> cookies = runner.query(FAKE_SQL, new CookieHandler());
+					final List<Cookie> cookies = runner.query(SQL, new CookieHandler());
 					if (!cookies.isEmpty() && cookies.size()==1){
 						ContextThreadLocal.unset();
 						final Context context = new Context();
