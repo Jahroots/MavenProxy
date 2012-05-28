@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -32,7 +33,10 @@ public class FirefoxCookieWatcher extends TimerTask {
 	
 	public FirefoxCookieWatcher() {
 		getCookiesSqlitePath();
-		lastModification = new File(sqliteFile).lastModified();
+		final Calendar ca= Calendar.getInstance();
+		ca.set(Calendar.YEAR, 1960);
+		lastModification = ca.getTimeInMillis();
+//		lastModification = new File(sqliteFile).lastModified();
 	}
 	
 	@Override
@@ -41,7 +45,7 @@ public class FirefoxCookieWatcher extends TimerTask {
 	}
 	
 	public static void main(String[] args) {
-//		new FirefoxCookieWatcher().db();
+		new FirefoxCookieWatcher().db();
 	}
 
 	
@@ -54,7 +58,8 @@ public class FirefoxCookieWatcher extends TimerTask {
 			File file = new File(pathToFirefox.toString());
 			if (file.exists() && file.isDirectory()){
 				if (file.list().length == 1){
-					file = new File(file.list()[0]);
+//					file = new File(file.list()[0]);
+					pathToFirefox.append(file.list()[0]);
 				}else{
 					String tmp = file.list()[0];
 					for (String of : file.list()){
@@ -62,9 +67,11 @@ public class FirefoxCookieWatcher extends TimerTask {
 							tmp = of;
 						}
 					}
-					file = new File(tmp);
+//					file = new File(tmp);
+					pathToFirefox.append(tmp);
 				}
 			}
+			file = new File(pathToFirefox.toString());
 			if (file.exists() && file.isDirectory()){
 				final StringBuilder sb = new StringBuilder(file.getAbsolutePath());
 				sb.append(File.separator);
@@ -76,6 +83,7 @@ public class FirefoxCookieWatcher extends TimerTask {
 	
 	public void db(){
 		if (lastModification < new File(sqliteFile).lastModified()){
+			lastModification = new File(sqliteFile).lastModified();
 			final boolean loadDriver = DbUtils.loadDriver(org.sqlite.JDBC.class.getName());
 			if (loadDriver){
 				Connection connection = null; 
