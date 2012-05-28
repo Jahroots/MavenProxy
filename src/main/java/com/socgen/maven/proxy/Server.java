@@ -6,7 +6,6 @@ import java.net.ServerSocket;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.socgen.maven.proxy.utils.CookieReader;
 import com.socgen.maven.proxy.utils.FirefoxCookieWatcher;
 import com.socgen.maven.proxy.utils.Watcher;
 
@@ -22,7 +21,7 @@ public class Server {
 //	public static final String HTTP_PROXY_USER = "http.proxyUser";
 //	public static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
 	public Server() {
-		CookieReader.readCookies();
+//		CookieReader.readCookies();
 //		watcher = new Watcher(new CookieTimeTask());
 		watcher = new Watcher(new FirefoxCookieWatcher());
 		watcher.start();
